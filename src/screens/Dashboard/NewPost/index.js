@@ -112,7 +112,6 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 		db.transaction(tx => {
 			tx.executeSql('INSERT INTO user (date, temperature, city, country, image, caption) values (?, ?, ?, ?, ?, ?)', [localData.date, localData.temperature, localData.city, localData.country, localData.photo, localData.caption],
 				(txObj, resultSet) => refetch(),
-				// (txObj, resultSet) => updateData({ data: [...userData, {...localData, id: resultSet.insertId }]}),
 				(txObj, error) => console.log('Error', error)
 			)
 		})
