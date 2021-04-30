@@ -4,16 +4,20 @@ import * as Location from 'expo-location';
 import { Camera } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
+import * as SQLite from 'expo-sqlite';
 import Container from '../../../components/Container';
 import FeedItem from '../../../components/FeedItem';
 import Header from '../../../components/Header';
 import { P } from '../../../styled-components/Text';
 import { Box, Row } from '../../../styled-components/View';
 import { SvgPicker } from '../../../styled-components/Svg';
+import { updateData } from '../../../actions/data';
+import NavigationService from '../../../navigation/NavigationService';
 
-export default function NewPost({ navigation, fetchLocation, locationData, fetchTemperature, temperature }) {
+export default function NewPost({ navigation, fetchLocation, locationData, fetchTemperature, temperature, updateData, userData, refetch }) {
 	const [hasCameraPermission, setHasCameraPermission] = useState(null);
 	const [hasLocationPermission, setHasLocationPermission] = useState(null);
+	const [hasMediaPermission, setHasMediaPermission] = useState(null);
 	const [location, setLocation] = useState(null);
 	const [type, setType] = useState(Camera.Constants.Type.back);
 	const [documentDirectory, setDocumentDirectory] = useState(FileSystem.documentDirectory);
@@ -21,6 +25,7 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 	const [caption, setCaption] = useState("");
 	const date = useState(new Date())[0];
 	const cameraRef = useRef(null);
+	const db = SQLite.openDatabase("picadaydb.db")
 	useEffect(() => {
 		(async () => {
 			const { status } = await Camera.requestPermissionsAsync();
@@ -32,6 +37,17 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 				let location = await Location.getCurrentPositionAsync({});
 				setLocation(location);
 		})();
+		(async () => {
+				let { status } = await MediaLibrary.requestPermissionsAsync();
+				setHasMediaPermission(status === 'granted')
+		})();
+		db.transaction(tx => {
+   tx.executeSql('SELECT * FROM user', null,
+    (txObj, { rows: { _array } }) => updateData({data: _array}),
+    (txObj, error) => console.log('Error ', error)
+   )
+  })
+		
 	}, []);
 
 	useEffect(()=>{
@@ -85,17 +101,31 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 		let dateName = new Date();
 		const asset = await MediaLibrary.createAssetAsync(photo);
 		const asset2 = await MediaLibrary.getAssetInfoAsync(asset);
-		// const res = await MediaLibrary.saveToLibraryAsync(photo);		
-		const res = await FileSystem.copyAsync({
-			from: asset2.localUri,
-			to: `${FileSystem.documentDirectory}images/${dateName.getTime()}.jpg`
-		}).then(e=>console.log("done:",e)).catch(err=>console.log(err))
-		console.log("photo:",photo)
-		console.log("asset:",asset)
-		console.log("asset2:",asset2)
-		console.log("res:",res)
+		let localData = {
+			caption,
+			photo: asset2.uri,
+			date: dateName.getTime(),
+			temperature,
+			city: locationData.city,
+			country: locationData.country
+		}
+		db.transaction(tx => {
+			tx.executeSql('INSERT INTO user (date, temperature, city, country, image, caption) values (?, ?, ?, ?, ?, ?)', [localData.date, localData.temperature, localData.city, localData.country, localData.photo, localData.caption],
+				(txObj, resultSet) => refetch(),
+				// (txObj, resultSet) => updateData({ data: [...userData, {...localData, id: resultSet.insertId }]}),
+				(txObj, error) => console.log('Error', error)
+			)
+		})
+		NavigationService.navigate("Home", true)
 	}
-
+	// const addToAlbum = async ({ asset }) => {
+	// 	const albumExists = await MediaLibrary.getAlbumAsync("Picaday")
+	// 	if(!albumExists){
+	// 		await MediaLibrary.createAlbumAsync("Picaday",asset, false)
+	// 	}else{
+	// 		await MediaLibrary.addAssetsToAlbumAsync([asset],albumExists.id,false)
+	// 	}
+	// }
 	return (<Container>
 		<Header back={true} navigation={navigation} />
 		<Box>
