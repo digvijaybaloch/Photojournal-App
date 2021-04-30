@@ -9,19 +9,31 @@ import { TouchableOpacity, ScrollView, Keyboard, RefreshControl, FlatList, View 
 import NavService from '../../../navigation/NavigationService';
 import { SecondaryButton, PrimaryButton } from '../../../styled-components/Button';
 import styled from 'styled-components';
+import * as SQLite from 'expo-sqlite';
 import { SvgPicker } from '../../../styled-components/Svg';
 import Header from '../../../components/Header';
 import FeedItem from '../../../components/FeedItem';
 
-export default function Home({}) {
-	let locDate = new Date().getTime()
-	return (<Container>
+export default function Home({ updateData, userData, refetchData }) {
+	const db = SQLite.openDatabase("picadaydb.db")
+	useEffect(()=>{
+		refetchData && fetchData()
+	},[refetchData])
+	const fetchData = () => {
+  db.transaction(tx => {
+   tx.executeSql('SELECT * FROM user', null,
+    (txObj, { rows: { _array } }) => updateData({data: _array.reverse()}),
+    (txObj, error) => console.log('Error ', error)
+   )
+  })
+ }
+
+ return (<Container>
 		<Header back={false} />
 		<ScrollView showsVerticalScrollIndicator={false}>
-			<FeedItem temperature={30.7} locationData={{city: "Jodhpur", Country: "in"}} photo=""
-			 onPress={()=>NavService.navigate("FeedDetail",{
-				date: locDate,	locationData: { city: "Jodhpur", country: "India" },		photo:"", temperature: 37, caption: "Another awesome morning. I can’t live a day without coffee."
-			})}/>
+			{userData && userData.length > 0 ? userData.map(item=>(<FeedItem key={item.id} date={item.date} temperature={item.temperature} locationData={{city: item.city, country: item.country}} photo={item.image}
+			 onPress={()=>NavService.navigate("FeedDetail",{ item })}
+			/>)) : <Box><P></P></Box> }			
 		</ScrollView>
 	</Container >
 	)

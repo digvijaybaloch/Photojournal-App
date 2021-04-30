@@ -13,7 +13,8 @@ import { SvgPicker } from '../../../styled-components/Svg';
 import Header from '../../../components/Header';
 import SummaryItem from '../../../components/SummaryItem';
 
-export default function Summary({}) {
+export default function Summary({ userData }) {
+	console.log(userData)
 	return (<Container>
 		<Header back={false} />
 		<Box jc="flex-start" pl="12px" pr="12px">

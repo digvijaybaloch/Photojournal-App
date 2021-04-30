@@ -14,12 +14,13 @@ import Header from '../../../components/Header';
 import FeedItem from '../../../components/FeedItem';
 
 export default function FeedDetail({ navigation, route }) {
-	const { date,	temperature,	locationData,	photo, caption } = route.params;
+	const { item } = route.params;
 	return (<Container>
 		<Header back={true} navigation={navigation} />
-		<FeedItem date={date} temperature={temperature} locationData={locationData} photo={photo} onPress={()=>navigation.navigate("ImageScreen",{ imageSrc: photo })} />
+		<FeedItem temperature={item.temperature} date={item.date} locationData={{city: item.city, country: item.country}} photo={item.image}
+		onPress={()=>navigation.navigate("ImageScreen",{ imageSrc: item.image })} />
 		<Box mt="25px" pl="25px" pr="25px" jc="flex-start" ai="flex-start">
-			<P align="left" size="16px" lh="19px" color="#314743">{caption}</P>
+			<P align="left" size="16px" lh="19px" color="#314743">{item.caption}</P>
 		</Box>
 	</Container >
 	)
