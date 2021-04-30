@@ -30,11 +30,9 @@ export default function Home({ updateData, userData, refetchData }) {
 
  return (<Container>
 		<Header back={false} />
-		<ScrollView showsVerticalScrollIndicator={false}>
-			{userData && userData.length > 0 ? userData.map(item=>(<FeedItem key={item.id} date={item.date} temperature={item.temperature} locationData={{city: item.city, country: item.country}} photo={item.image}
-			 onPress={()=>NavService.navigate("FeedDetail",{ item })}
-			/>)) : <Box><P></P></Box> }			
-		</ScrollView>
-	</Container >
+			{userData && userData.length > 0 ? <ScrollView showsVerticalScrollIndicator={false}>{
+				userData.map(item=>(<FeedItem key={item.id} date={item.date} temperature={item.temperature} locationData={{city: item.city, country: item.country}} photo={item.image} onPress={()=>NavService.navigate("FeedDetail",{ item })}/>))
+			}</ScrollView> : <Box><P>Pictures you click will be shown here</P></Box> }
+	</Container>
 	)
 }

@@ -13,27 +13,57 @@ import { SvgPicker } from '../../../styled-components/Svg';
 import Header from '../../../components/Header';
 import SummaryItem from '../../../components/SummaryItem';
 
+const MONTHS = [
+ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+]
+
+const DAY = [
+ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'
+]
+
 export default function Summary({ userData }) {
-	console.log(userData)
+	const [diffInDays, setDiffInDays] = useState(1)
+	const [firstDay, setFirstDay] = useState(new Date().getTime())
+	const [hottestDay, setHottestDay] = useState({temperature: 0})
+	const [coldestDay, setColdestDay] = useState({temperature: 100})
+	const today = new Date().getTime();
+	useEffect(()=>{
+		setDiffInDays(Math.round((today-firstDay)/(1000*60*60*24)));
+	},[firstDay])
+	userData.map(item => {
+		if(firstDay > item.date){
+			setFirstDay(item.date)
+		}
+	})
+	userData.map(item => {
+		if(hottestDay.temperature < item.temperature){
+			setHottestDay(item)
+		}
+	})
+	userData.map(item => {
+		if(coldestDay.temperature > item.temperature){
+			setColdestDay(item)
+		}
+	})
 	return (<Container>
 		<Header back={false} />
-		<Box jc="flex-start" pl="12px" pr="12px">
+		{userData && userData.length > 0 ? <Box jc="flex-start" pl="12px" pr="12px">
 			<SummaryItem
 				headingText="Days"
-				labelText="17/19"
-				subText="You have recorded 17 dasys since the first day" 
+				labelText={`${userData.length || 0}/${diffInDays+1}`}
+				subText={`You have recorded ${userData.length || 0} day(s) since the first day`}
 			/>
 			<SummaryItem
 				headingText="Hottest Day"
-				labelText="39°"
-				subText="Sun Jan 12, 2021" 
+				labelText={`${hottestDay.temperature.toFixed(1)}°`}
+				subText={`${DAY[new Date(hottestDay.date).getDay()]} ${MONTHS[new Date(hottestDay.date).getMonth()]} ${new Date(hottestDay.date).getDate()}, ${new Date(hottestDay.date).getFullYear()}`}
 			/>
 			<SummaryItem
 				headingText="Coldest Day"
-				labelText="21°"
-				subText="Mon Jan 1, 2021" 
+				labelText={`${coldestDay.temperature.toFixed(1)}°`}
+				subText={`${DAY[new Date(coldestDay.date).getDay()]} ${MONTHS[new Date(coldestDay.date).getMonth()]} ${new Date(coldestDay.date).getDate()}, ${new Date(coldestDay.date).getFullYear()}`}
 			/>
-		</Box>
+		</Box> : <Box><P>Add pictures to get summary</P></Box>}
 	</Container >
 	)
 }
