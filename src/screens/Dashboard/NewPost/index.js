@@ -11,7 +11,6 @@ import Header from '../../../components/Header';
 import { P } from '../../../styled-components/Text';
 import { Box, Row } from '../../../styled-components/View';
 import { SvgPicker } from '../../../styled-components/Svg';
-import { updateData } from '../../../actions/data';
 import NavigationService from '../../../navigation/NavigationService';
 
 export default function NewPost({ navigation, fetchLocation, locationData, fetchTemperature, temperature, updateData, userData, refetch }) {
@@ -23,7 +22,10 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 	const [documentDirectory, setDocumentDirectory] = useState(FileSystem.documentDirectory);
 	const [photo, setPhoto] = useState("");
 	const [caption, setCaption] = useState("");
+	const [lastDay, setLastDay] = useState(null)
 	const date = useState(new Date())[0];
+	const [localDate,setLocalDate] = useState('')
+	const today = `${new Date().getDate()}${new Date().getMonth()}${new Date().getFullYear()}`
 	const cameraRef = useRef(null);
 	const db = SQLite.openDatabase("picadaydb.db")
 	useEffect(() => {
@@ -47,8 +49,20 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
     (txObj, error) => console.log('Error ', error)
    )
   })
-		
 	}, []);
+	userData.map(item => {
+		if(!lastDay) {
+			setLastDay(item)
+		}else{
+			if(lastDay.date < item.date){
+				setLastDay(item)
+			}
+		}
+	})
+
+	useEffect(()=>{
+		lastDay && setLocalDate(`${new Date(lastDay.date).getDate()}${new Date(lastDay.date).getMonth()}${new Date(lastDay.date).getFullYear()}`)
+	},[lastDay])
 
 	useEffect(()=>{
 		location && fetchLocation({ lat:location.coords.latitude ,lon:location.coords.longitude  })
@@ -84,11 +98,17 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 	if (hasLocationPermission === false) {
 		return <Box><P>Permission to access location was denied</P></Box>;
 	}
+	if (hasMediaPermission === null) {
+		return <View />;
+	}
+	if (hasMediaPermission === false) {
+		return <Box><P>Permission to access Gallery was denied</P></Box>;
+	}
 	
 	const clickPic = async () => {
 		if (cameraRef) {
 			await cameraRef.current.takePictureAsync({
-				quality: 0.2,
+				quality: 0,
 				base64: false,
 				exif: false,
 				onPictureSaved: e=>setPhoto(e.uri),
@@ -109,22 +129,22 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 			city: locationData.city,
 			country: locationData.country
 		}
-		db.transaction(tx => {
-			tx.executeSql('INSERT INTO user (date, temperature, city, country, image, caption) values (?, ?, ?, ?, ?, ?)', [localData.date, localData.temperature, localData.city, localData.country, localData.photo, localData.caption],
-				(txObj, resultSet) => refetch(),
-				(txObj, error) => console.log('Error', error)
-			)
-		})
+		if(localDate ===	today){
+			db.transaction(tx => {
+				tx.executeSql('UPDATE user SET temperature = ?, city = ?, country = ?, image = ?, caption = ?  WHERE id = ?', [localData.temperature, localData.city, localData.country, localData.photo, localData.caption, lastDay.id],
+					(txObj, resultSet) => refetch()
+				)
+			})
+		}else{
+			db.transaction(tx => {
+					tx.executeSql('INSERT INTO user (date, temperature, city, country, image, caption) values (?, ?, ?, ?, ?, ?)', [localData.date, localData.temperature, localData.city, localData.country, localData.photo, localData.caption],
+						(txObj, resultSet) => refetch(),
+						(txObj, error) => console.log('Error', error)
+					)
+				})
+			}
 		NavigationService.navigate("Home", true)
 	}
-	// const addToAlbum = async ({ asset }) => {
-	// 	const albumExists = await MediaLibrary.getAlbumAsync("Picaday")
-	// 	if(!albumExists){
-	// 		await MediaLibrary.createAlbumAsync("Picaday",asset, false)
-	// 	}else{
-	// 		await MediaLibrary.addAssetsToAlbumAsync([asset],albumExists.id,false)
-	// 	}
-	// }
 	return (<Container>
 		<Header back={true} navigation={navigation} />
 		<Box>
