@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, TouchableOpacity, TextInput } from 'react-native';
 import * as Location from 'expo-location';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { Camera } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
@@ -50,6 +51,22 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
    )
   })
 	}, []);
+	useEffect(()=>{
+			if(photo && photo.length > 0){
+				(async () => {
+					await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.ALL);
+				})();
+			}else{
+				(async () => {
+					await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+				})();
+			}
+			return ()=>{
+				(async () => {
+					await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.ALL);
+				})();
+			}
+	},[photo])
 	userData.map(item => {
 		if(!lastDay) {
 			setLastDay(item)
