@@ -47,7 +47,7 @@ export default function Summary({ userData }) {
 	})
 	return (<Container>
 		<Header back={false} />
-		{userData && userData.length > 0 ? <Box jc="flex-start" pl="12px" pr="12px">
+		{userData && userData.length > 0 ? <ScrollView showsVerticalScrollIndicator={false}><Box jc="flex-start" pl="12px" pr="12px">
 			<SummaryItem
 				headingText="Days"
 				labelText={`${userData.length || 0}/${diffInDays+1}`}
@@ -63,7 +63,7 @@ export default function Summary({ userData }) {
 				labelText={`${coldestDay.temperature.toFixed(1)}°`}
 				subText={`${DAY[new Date(coldestDay.date).getDay()]} ${MONTHS[new Date(coldestDay.date).getMonth()]} ${new Date(coldestDay.date).getDate()}, ${new Date(coldestDay.date).getFullYear()}`}
 			/>
-		</Box> : <Box><P>Add pictures to get summary</P></Box>}
+		</Box></ScrollView> : <Box><P>Add pictures to get summary</P></Box>}
 	</Container >
 	)
 }
