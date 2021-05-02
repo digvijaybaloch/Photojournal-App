@@ -42,24 +42,6 @@ const Box = styled.View`
  border-radius: ${({ br }) => br || '0px'};
 `;
 
-const LoaderBackground = styled.View`
- display: flex;
- align-items: center;
- flex-direction: column;
- justify-content: space-around;
- background-color: #00000040;
-`;
-
-const LoaderWrapper = styled.View`
- height: 100%;
- width: 100%;
- padding: 10px;
- display: flex;
- align-items: center;
- flex-direction: row;
- justify-content: space-around;
-`;
-
 export {
- Row, Box, LoaderBackground, LoaderWrapper
+ Row, Box
 }

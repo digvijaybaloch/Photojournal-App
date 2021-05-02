@@ -9,13 +9,13 @@ import { rootSaga } from '../sagas';
 const sagaMiddleware = createSagaMiddleware();
 
 const store = createStore(
-  rootReducer,
-  composeWithDevTools(
+ rootReducer,
+ composeWithDevTools(
   applyMiddleware(
-    sagaMiddleware,
-    createLogger(),
+   sagaMiddleware,
+   createLogger(),
   )
-),
+ ),
 );
 
 sagaMiddleware.run(rootSaga);

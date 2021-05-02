@@ -1,5 +1,4 @@
-import { takeLatest, put, call, take } from 'redux-saga/effects';
-import { buffers, eventChannel, END } from 'redux-saga'
+import { takeLatest, put, call } from 'redux-saga/effects';
 import * as api from '../store/api';
 import { FETCH_LOCATION_DATA, FETCH_LOCATION_DATA_FAILED, FETCH_LOCATION_DATA_SUCCESSFUL  } from '../actions/actionTypes';
 

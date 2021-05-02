@@ -3,39 +3,25 @@ import { Platform, StatusBar, StyleSheet, View, Dimensions } from 'react-native'
 import { connect } from 'react-redux';
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useFonts, Inter_400Regular, Inter_700Bold, Inter_500Medium } from '@expo-google-fonts/inter';
-import * as SplashScreen from 'expo-splash-screen';
 import * as SQLite from 'expo-sqlite';
-import { Ionicons } from '@expo/vector-icons';
 import { Provider } from 'react-redux';
 import AppNavigator from './src/navigation';
-import Loader from './src/components/Loader';
 import store from './src/store';
-import { updateData } from './src/actions/data';
 
-const ConnectLoader = ({ loading }) => {
+const ConnectLoader = () => {
  return (
  <SafeAreaProvider>
   <View style={styles.container}>
    {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-   <Loader loading={loading} />
    <AppNavigator />
    </View>
   </SafeAreaProvider>
  )
 }
 
-const mapStateToProps = (state) => ({
- loading: state.loading
-})
-
-const mapDispatchToProps = (dispatch) => ({
- updateData
-})
-
-const AppLoader = connect(mapStateToProps, mapDispatchToProps)(ConnectLoader)
+const AppLoader = ConnectLoader
 
 export default function App(props) {
- const [isLoadingComplete, setLoadingComplete] = React.useState(false);
  let [fontsLoaded] = useFonts({
   Inter_400Regular, Inter_700Bold, Inter_500Medium
  });
@@ -47,24 +33,6 @@ export default function App(props) {
    )
   })
  },[])
-  // React.useEffect(() => {
-  //   async function loadResourcesAndDataAsync() {
-  //     try {
-  //       SplashScreen.preventAutoHideAsync();
-  //       // Load fonts
-        
-  //     } catch (e) {
-  //       // We might want to provide this error information to an error reporting services
-  //       console.warn(e);
-  //     } finally {
-  //       setLoadingComplete(true);
-  //       SplashScreen.hideAsync();
-  //     }
-  //   }
-
-  //   loadResourcesAndDataAsync();
-  // }, []);
-
   if (!fontsLoaded) {
    return null;
   } else {
