@@ -1,6 +1,4 @@
-import React from 'react'
 import styled from 'styled-components/native'
-import { Inter_400Regular, Inter_700Bold, Inter_500Medium } from '@expo-google-fonts/inter';
 
 const Heading = styled.Text`
  font-family: Inter_700Bold;

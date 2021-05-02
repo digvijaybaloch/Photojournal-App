@@ -1,17 +1,15 @@
-import * as React from "react";
+import React from "react";
 import { View, TouchableOpacity } from "react-native";
 import styled from 'styled-components/native'
 import NavigationService from '../navigation/NavigationService'
 import { SvgPicker } from "../styled-components/Svg"
 
-export default function CustomTabBar({ state, descriptors, navigation, createTaskActive, activateCreateTask, deactivateCreateTask }) {
-
-	return (<View style={{
-		display: "flex", width: "100%", flexDirection: "row", minHeight: 56, maxHeight: 56, justifyContent: "center",
-		backgroundColor: "#FFF", borderTopWidth: 0.5, borderTopColor: "#E8E8E8"
+export default function CustomTabBar({ state, descriptors, navigation }) {
+	return <View style={{
+		display: "flex", width: "100%", flexDirection: "row", minHeight: 56, maxHeight: 56, justifyContent: "center", backgroundColor: "#FFF", borderTopWidth: 0.5, borderTopColor: "#E8E8E8"
 	}}>
 		<AddPost onPress={()=>NavigationService.navigate("NewPost")}><SvgPicker name="add-post" /></AddPost>
-		{!createTaskActive && state.routes.map((route, index) => {
+		{ state.routes.map((route, index) => {
 			const { options } = descriptors[route.key];
 			const focused = state.index === index;
 			const indexKey = index;
@@ -20,7 +18,6 @@ export default function CustomTabBar({ state, descriptors, navigation, createTas
 				if (!focused && !event.defaultPrevented) return navigation.navigate(route.name);
 			};
 			const onLongPress = () => navigation.emit({ type: "tabLongPress", target: route.key });
-
 			return (<TouchableOpacity key={index} accessibilityRole="button" accessibilityStates={focused ? ["selected"] : []}
 				accessibilityLabel={options.tabBarAccessibilityLabel} testID={options.tabBarTestID} onPress={onPress}
 				onLongPress={onLongPress} style={{
@@ -30,7 +27,6 @@ export default function CustomTabBar({ state, descriptors, navigation, createTas
 			</TouchableOpacity>);
 		})}
 	</View>
-	);
 }
 const names = [
 	"navbar-home",
@@ -40,7 +36,6 @@ const focusedNames = [
 	"navbar-home-active",
 	"navbar-summary-active",
 ];
-
 const AddPost = styled.TouchableOpacity`
 	height: 56px;
 	width: 56px;

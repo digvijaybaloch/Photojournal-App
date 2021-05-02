@@ -20,7 +20,7 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 	const [hasMediaPermission, setHasMediaPermission] = useState(null);
 	const [location, setLocation] = useState(null);
 	const [type, setType] = useState(Camera.Constants.Type.back);
-	const [documentDirectory, setDocumentDirectory] = useState(FileSystem.documentDirectory);
+	const documentDirectory = useState(FileSystem.documentDirectory)[0];
 	const [photo, setPhoto] = useState("");
 	const [caption, setCaption] = useState("");
 	const [lastDay, setLastDay] = useState(null)
@@ -67,15 +67,6 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 				})();
 			}
 	},[photo])
-	userData.map(item => {
-		if(!lastDay) {
-			setLastDay(item)
-		}else{
-			if(lastDay.date < item.date){
-				setLastDay(item)
-			}
-		}
-	})
 
 	useEffect(()=>{
 		lastDay && setLocalDate(`${new Date(lastDay.date).getDate()}${new Date(lastDay.date).getMonth()}${new Date(lastDay.date).getFullYear()}`)
@@ -89,11 +80,19 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 		locationData && fetchTemperature({ city: locationData.city, countryCode: locationData.country_code })
 	},[locationData])
 
-
 	useEffect(()=>{
 		documentDirectory && createDirectory()
 	},[documentDirectory])
 
+	userData.map(item => {
+		if(!lastDay) {
+			setLastDay(item)
+		}else{
+			if(lastDay.date < item.date){
+				setLastDay(item)
+			}
+		}
+	})
 	const createDirectory = async () => {
 		const res = await FileSystem.getInfoAsync(`${FileSystem.documentDirectory}images/`)
 		if(!res.exists){
@@ -102,7 +101,6 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 			console.log("Directory exists")
 		}
 	}
-
 	if (hasCameraPermission === null) {
 		return <View />;
 	}
@@ -120,8 +118,7 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 	}
 	if (hasMediaPermission === false) {
 		return <Box><P>Permission to access Gallery was denied</P></Box>;
-	}
-	
+	}	
 	const clickPic = async () => {
 		if (cameraRef) {
 			await cameraRef.current.takePictureAsync({
@@ -131,9 +128,8 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 				onPictureSaved: e=>setPhoto(e.uri),
 				skipProcessing: true
 			});			
+		}
 	}
-	}
-
 	const savePost = async () => {
 		let dateName = new Date();
 		const asset = await MediaLibrary.createAssetAsync(photo);
@@ -162,7 +158,7 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 			}
 		NavigationService.navigate("Home", true)
 	}
-	return (<Container>
+	return <Container>
 		<Header back={true} navigation={navigation} />
 		<Box>
 			{photo && photo.length > 0 ? (
@@ -193,6 +189,5 @@ export default function NewPost({ navigation, fetchLocation, locationData, fetch
 			</Camera>
 			)}
 		</Box>
-	</Container >
-	)
+	</Container>
 }
