@@ -1,26 +1,16 @@
-import * as React from 'react';
-import { Box, Row } from '../../../styled-components/View';
-import { Heading, Label, P } from '../../../styled-components/Text';
-import { AppInput } from '../../../styled-components/Input';
-import { FgImage } from '../../../styled-components/Image';
-const { useState, useEffect } = React
+import React, { useState, useEffect } from 'react';
+import { ScrollView } from 'react-native';
+import { Box } from '../../../styled-components/View';
+import { P } from '../../../styled-components/Text';
 import Container from '../../../components/Container';
-import { TouchableOpacity, ScrollView, Keyboard, RefreshControl, FlatList, View } from 'react-native';
-import NavService from '../../../navigation/NavigationService';
-import { SecondaryButton, PrimaryButton } from '../../../styled-components/Button';
-import styled from 'styled-components';
-import { SvgPicker } from '../../../styled-components/Svg';
 import Header from '../../../components/Header';
 import SummaryItem from '../../../components/SummaryItem';
-
 const MONTHS = [
  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ]
-
 const DAY = [
  'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'
 ]
-
 export default function Summary({ userData }) {
 	const [diffInDays, setDiffInDays] = useState(1)
 	const [firstDay, setFirstDay] = useState(new Date().getTime())
