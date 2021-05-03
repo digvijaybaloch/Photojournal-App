@@ -5,6 +5,7 @@ import { P } from '../../../styled-components/Text';
 import Container from '../../../components/Container';
 import Header from '../../../components/Header';
 import SummaryItem from '../../../components/SummaryItem';
+import NavigationService from '../../../navigation/NavigationService';
 const MONTHS = [
  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ]
@@ -44,11 +45,13 @@ export default function Summary({ userData }) {
 				subText={`You have recorded ${userData.length || 0} day(s) since the first day`}
 			/>
 			<SummaryItem
+			 onPress={()=>NavigationService.navigate("FeedDetail",{ item: hottestDay })}
 				headingText="Hottest Day"
 				labelText={`${hottestDay.temperature.toFixed(1)}°`}
 				subText={`${DAY[new Date(hottestDay.date).getDay()]} ${MONTHS[new Date(hottestDay.date).getMonth()]} ${new Date(hottestDay.date).getDate()}, ${new Date(hottestDay.date).getFullYear()}`}
 			/>
 			<SummaryItem
+			 onPress={()=>NavigationService.navigate("FeedDetail",{ item: coldestDay })}
 				headingText="Coldest Day"
 				labelText={`${coldestDay.temperature.toFixed(1)}°`}
 				subText={`${DAY[new Date(coldestDay.date).getDay()]} ${MONTHS[new Date(coldestDay.date).getMonth()]} ${new Date(coldestDay.date).getDate()}, ${new Date(coldestDay.date).getFullYear()}`}
