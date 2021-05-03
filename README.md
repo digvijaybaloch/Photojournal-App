@@ -2,7 +2,7 @@
 
 Picaday is an app that enables the user to capture a moment from their day and save it with their thoughts.  
 The app has been made using [React Native](https://reactnative.dev/) and [Expo](https://docs.expo.io/)  
-The APK file can be downloaded from [here](https://drive.google.com/file/d/1vU-ZwHr6ludiNI6EMJ9vKPrQOBxw4CT1/view?usp=sharing).
+The APK file can be downloaded from [here](https://drive.google.com/file/d/17YGHbk1prbD3KrAHXLLiBNoh7G9BsI-U/view?usp=sharing).
 
 ## Installation
 
